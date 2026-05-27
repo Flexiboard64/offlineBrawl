@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brawl Offline</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+}
+
+#unity-container {
+    width: 100%;
+    height: 100%;
+}
+
+#unity-canvas {
+    width: 100%;
+    height: 100%;
+    background: black;
+}
+
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-family: Arial;
+}
+</style>
+
+<script>
+window.getPlatformPayload = () => null;
+window.getPlatformId = () => "web";
+
+console.log("[Stub] Playgama SDK ready");
+</script>
+
+</head>
+
+<body>
+
+<div id="unity-container">
+    <canvas id="unity-canvas"></canvas>
+</div>
+
+<div id="loading">Loading...</div>
+
+<script>
+
+const canvas = document.querySelector("#unity-canvas");
+
+const config = {
+    dataUrl: "web.data.unityweb",
+    frameworkUrl: "web.framework.js.unityweb",
+    codeUrl: "web.wasm.unityweb",
+
+    streamingAssetsUrl: "StreamingAssets",
+
+    companyName: "Game",
+    productName: "Brawl Offline",
+    productVersion: "1.0",
+
+    /* VERY IMPORTANT */
+    cacheControl: function (url) {
+        return "must-revalidate";
+    }
+};
+
+const script = document.createElement("script");
+script.src = "web.loader.js";
+
+script.onload = () => {
+
+    createUnityInstance(canvas, config, (progress) => {
+
+        document.querySelector("#loading").innerHTML =
+            "Loading " + Math.round(progress * 100) + "%";
+
+    }).then((unityInstance) => {
+
+        document.querySelector("#loading").style.display = "none";
+
+        console.log("Unity loaded successfully");
+
+    }).catch((message) => {
+
+        console.error(message);
+        alert(message);
+
+    });
+
+};
+
+script.onerror = () => {
+
+    alert("Failed to load web.loader.js");
+
+};
+
+document.body.appendChild(script);
+
+</script>
+
+</body>
+</html>
